@@ -1,0 +1,13 @@
+ok,can play manually - nice!
+
+next steps:
+
+be able to play against other agents, not just random
+codify "agent" -> takes observations,returns actions
+
+build eval suite
+-at first, custom, just score averaged over a few games against other agents...
+-eventually mimic the skill score metric used by kaggle
+
+then start to think about training
+how to represent action space?

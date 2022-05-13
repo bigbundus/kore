@@ -93,8 +93,9 @@ def draw_kore_amounts(kore_amounts, excluded_xys={}):
         if kore_amount >= 20: color = "silver"
         if kore_amount >= 100: color = "gray"
         if kore_amount >= 500: color = "black"
+        color="black"
         if (x,y) not in excluded_xys and kore_amount > 0:
-            text = plt.text(x, y, int(kore_amount), color=color, fontsize=7,
+            text = plt.text(x, y, int(kore_amount), color=color, fontsize=10,
                             horizontalalignment='center', verticalalignment='center')
             #text.set_path_effects([matplotlib.patheffects.withStroke(linewidth=3, foreground='w', alpha=0.8)])
 
