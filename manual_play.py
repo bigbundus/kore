@@ -28,27 +28,50 @@ plt.figure(figsize=(10,10))
 
 
 def get_player_action(board):
-    #print()
-    player_input = input("Enter Action Type: ")
-    board.current_player.shipyards[0].next_action = ShipyardAction.spawn_ships(1)
+    # actions
+    # do nothing, spawn ships, launch fleet with flightplan
+    player_input = -1
+
+    while player_input not in [0,1,2]:
+        print("-- Actions --")
+        print("0: Do nothing")
+        print("1: Spawn ships")
+        print("2: Launch fleet with flight plan")
+        player_input = int(input("Enter Action Type: "))
+
+    if player_input == 0:
+        next_action = None
+
+    if player_input == 1:
+        nb_of_ships = int(input("Enter number of ships to spawn: "))
+        next_action = ShipyardAction.spawn_ships(nb_of_ships)
+
+    if player_input == 2:
+        nb_of_ships = int(input("Enter number of ships to launch: "))
+        flight_plan = input("Enter flight plan: ")
+        next_action = ShipyardAction.launch_fleet_with_flight_plan(nb_of_ships, flight_plan)
+
+
+    board.current_player.shipyards[0].next_action = next_action
+    print("--------------")
     #return 0
 
 
 
-observation = [env.reset()]
+observation = env.reset()
 
 
-for i in range(8):
+for i in range(80):
 
-    board = Board(observation[0], env_configuration)
+    board = Board(observation, env_configuration)
     get_player_action(board)
 
 
 
     # need to assign actions to shipyards!
     #print(action)
-
-    observation = env.step(board.current_player.next_actions)
+    #from step we get: [raw_observation, old_reward, done, info]
+    observation, old_reward, done, info = env.step(board.current_player.next_actions)
     #print(observation[0])
 
     # need to check if game over!!!
@@ -59,16 +82,20 @@ for i in range(8):
     plt.pause(0.1)
 
 
-    p1_nb_shipyards = len(observation[0]['players'][0][1].keys())
-    p2_nb_shipyards = len(observation[0]['players'][1][1].keys())
+    p1_nb_shipyards = len(observation['players'][0][1].keys())
+    p2_nb_shipyards = len(observation['players'][1][1].keys())
+    #this isnt correct! could have no shipyard but still have enough kore to make a new one with a ship
+    # actually need 50 ships,not kore to convert to new shipyard
+    # need to check kore amount
+    # actually, just check the done return from step!
 
-
-    if p1_nb_shipyards == 0 or p2_nb_shipyards == 0:
+    #if p1_nb_shipyards == 0 or p2_nb_shipyards == 0
+    if done:
         print("Game over!")
         break
-    else:
-        print("player 1 shipyards:", p1_nb_shipyards)
-        print("player 2 shipyards:", p2_nb_shipyards)
+    #else:
+        #print("player 1 shipyards:", p1_nb_shipyards)
+        #print("player 2 shipyards:", p2_nb_shipyards)
 
 
 plt.show()

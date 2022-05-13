@@ -13,19 +13,19 @@ def draw_board_from_obs(observation):
     plt.ylim((-0.5,20.5))
 
     # observation[0]["observation"]["kore"]
-    kore_amounts = np.array(observation[0]["kore"])
+    kore_amounts = np.array(observation["kore"])
     draw_kore_amounts(kore_amounts)
 
     color="blue"
     player_idx=0
 
-    for shipyard_info in observation[0]["players"][player_idx][1].values():
+    for shipyard_info in observation["players"][player_idx][1].values():
         loc_idx, ships_count, existence = shipyard_info
         x,y = kaggle_environments.helpers.Point.from_index(loc_idx, 21)
         draw_shipyard(x-0.5,y-0.5, ships_count, existence, color)
         #excluded_xys.add((x,y))
 
-    for fleet_info in observation[0]["players"][player_idx][2].values():
+    for fleet_info in observation["players"][player_idx][2].values():
         loc_idx, kore_amount, ships_size, dir_idx, flight_plan = fleet_info
         x,y = kaggle_environments.helpers.Point.from_index(loc_idx, 21)
         draw_fleet(x-0.5,y-0.5,dir_idx,ships_size,kore_amount, color)
@@ -35,22 +35,22 @@ def draw_board_from_obs(observation):
     color="red"
     player_idx=1
 
-    for shipyard_info in observation[0]["players"][player_idx][1].values():
+    for shipyard_info in observation["players"][player_idx][1].values():
         loc_idx, ships_count, existence = shipyard_info
         x,y = kaggle_environments.helpers.Point.from_index(loc_idx, 21)
         draw_shipyard(x-0.5,y-0.5, ships_count, existence, color)
         #excluded_xys.add((x,y))
 
-    for fleet_info in observation[0]["players"][player_idx][2].values():
+    for fleet_info in observation["players"][player_idx][2].values():
         loc_idx, kore_amount, ships_size, dir_idx, flight_plan = fleet_info
         x,y = kaggle_environments.helpers.Point.from_index(loc_idx, 21)
         draw_fleet(x-0.5,y-0.5,dir_idx,ships_size,kore_amount, color)
         draw_flight_plan(x-0.5,y-0.5,dir_idx,flight_plan,ships_size, color)
         #excluded_xys.add((x,y))
 
-    turn_num = observation[0]["step"]
-    home_stored_kore = observation[0]["players"][0][0]
-    away_stored_kore = observation[0]["players"][1][0]
+    turn_num = observation["step"]
+    home_stored_kore = observation["players"][0][0]
+    away_stored_kore = observation["players"][1][0]
     draw_statistics(turn_num, home_stored_kore, away_stored_kore)
 
 def existence_to_production_capacity(existence):
