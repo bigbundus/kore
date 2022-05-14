@@ -1,13 +1,70 @@
-ok,can play manually - nice!
+[X] ok,can play manually - nice!
 
 next steps:
 
-be able to play against other agents, not just random
-codify "agent" -> takes observations,returns actions
+[X] be able to play against other agents, not just random
+[X] codify "agent" -> takes observations, returns actions
 
-build eval suite
--at first, custom, just score averaged over a few games against other agents...
--eventually mimic the skill score metric used by kaggle
+[] build eval suite
+[] -at first, custom, just score averaged over a few games against other agents...
+[] make all the base agents play each other and plot scores!
 
-then start to think about training
-how to represent action space?
+[] -eventually mimic the skill score metric used by kaggle
+
+[] then start to think about training
+[] how to represent action space?
+
+[] could try the 'population' approach seen in some deepmind competitive envs
+[] could try hardcoding really good agents...
+
+[] genetic algos...
+[] training rl from scratch - might not actually be that hard, but will be tough to set up
+
+does sequence matter?
+probably not - since you have access to the flight plan, its completely deterministic
+but! it might matter for knowing what the other agent is going to do...
+
+----
+
+proposal:
+one agent
+takes in an observation + a shipyard position (!) and issues an order to that shipyard
+then can just be run multiple times for multiple shipyards...
+will it be able to "coordinate" between shipyards? It might eventually learn to do so
+if it sees examples of 'coordination' happening accidently be rewarded
+
+ok, so what is the action space?
+
+proposal:
+[
+action_type (do_nothing, spawn_ships, launch_fleet_with_plan)
+nb_of_ships_to_spawn (will just be ignored if spawn_ships action type isnt taken... should I cap it at max? do so WITHIN AGENT!)
+**flight_plan** (a string of letters and numbers, again ignored if the matching action isnt chosen)
+]
+
+flight plan of arbitrary length... how to address this
+its not truly arbitrary...
+
+max_flight_plan_length = floor(2 * ln(num_ships)) + 1
+assume fleet_size = 100
+ln(100) = 4.6
+so max_flight_plan_length = 9 + 1 = 10
+(100 seems big for a fleet...)
+
+so could have 10 action features dedicated to the flight plan
+each one would be a number corresponding to one of:
+NSEW1234567890C (c for convert!)
+so 15 values...
+what can the action spaces look like?
+thinking like Box() Discrete etc from OpenAI Gym
+how do kaggle_environments differ from Gym?
+
+looks like theyre very similar: env.trainer([None, agent])
+basically just mimics Gym training env...
+
+Strategy Tip: Notice that the minimum number of ships for a fleet that can
+complete a circle (eg “N5E5S5W”) is 21.
+
+Consider how the fleet coalescence mechanics might allow for collection
+with smaller fleets.
+**Smaller fleets can be "picked up" by larger fleets**

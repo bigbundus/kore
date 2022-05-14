@@ -15,13 +15,13 @@ from visualization_utils import *
 kor_env = make("kore_fleets", debug=True)
 #print(env.name, env.version)
 
-agents = {"random": random_agent,
-            "miner": miner_agent,
-            "do_nothing": do_nothing_agent,
-            "balanced": balanced_agent,
-            "attacker": attacker_agent}
-            
-env = kor_env.train([None, "random"])
+# agents = {"random": random_agent,
+#             "miner": miner_agent,
+#             "do_nothing": do_nothing_agent,
+#             "balanced": balanced_agent,
+#             "attacker": attacker_agent}
+
+env = kor_env.train([None, "miner"])
 
 env_configuration= kor_env.configuration
 
@@ -67,7 +67,7 @@ def get_player_action(board):
 observation = env.reset()
 
 
-for i in range(8):
+for i in range(100):
 
     board = Board(observation, env_configuration)
     get_player_action(board)
