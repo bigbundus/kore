@@ -1,5 +1,5 @@
 from kaggle_environments import make
-
+import random
 from visualization_utils import *
 from torch_agent import *
 
@@ -11,12 +11,11 @@ from kaggle_environments.envs.kore_fleets.helpers import (
 import pickle
 
 kor_env = make("kore_fleets", debug=True)
-env = kor_env.train([None, "random"])
+
 
 env_config = kor_env.configuration
 
 
-observation = env.reset()
 
 
 
@@ -31,8 +30,7 @@ TARGET_UPDATE = 10
 def select_action(state):
     global steps_done
     sample = random.random()
-    eps_threshold = EPS_END + (EPS_START - EPS_END) * \
-        math.exp(-1. * steps_done / EPS_DECAY)
+    eps_threshold = EPS_END + (EPS_START - EPS_END) * math.exp(-1. * steps_done / EPS_DECAY)
     steps_done += 1
     if sample > eps_threshold:
 
@@ -59,7 +57,7 @@ target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
 optimizer = optim.RMSprop(policy_net.parameters())
-memory = ReplayMemory(10000)
+memory = ReplayMemory(20000)
 
 steps_done = 0
 
@@ -117,10 +115,15 @@ def tensorize_state(model_input):
     return tensor_state
 
 collect_episodes = []
-num_episodes = 500
+num_episodes = 100
 for i_episode in range(num_episodes):
     episode_record = []
+
+    enemy_agent = random.choice(["random", "do_nothing", "do_nothing"]) #"miner",
+    print("Episode ", i_episode)
+    print("Enemy Agent:", enemy_agent)
     # Initialize the environment and state
+    env = kor_env.train([None, enemy_agent])
     observation = env.reset()
     last_state = tensorize_state(observation_to_model_input(observation, env_config))
     current_state = tensorize_state(observation_to_model_input(observation, env_config))
@@ -152,11 +155,14 @@ for i_episode in range(num_episodes):
         optimize_model()
         if done:
             #episode_durations.append(t + 1)
-            print("Episode done! Steps: ", t+1)
+
             episode_record.append(t)
             episode_record.append(observation['players'][0][0])
             episode_record.append(observation['players'][1][0])
             #plot_durations()
+            print("Episode done! Steps: ", t+1)
+            print("Scores: training agent:", observation['players'][0][0], "Enemy agent:", observation['players'][1][0])
+            print("----------")
 
             collect_episodes.append(episode_record)
             break
@@ -171,7 +177,7 @@ for i_episode in range(num_episodes):
 for e in collect_episodes:
     print(e)
 
-with open('episode_scores.p', 'wb') as f:
+with open('episode_scores_1k.p', 'wb') as f:
     pickle.dump(collect_episodes, f)
 
 """
